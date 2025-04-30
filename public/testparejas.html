@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Evaluación Cognitiva</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f2f5;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 800px;
+      width: 100%;
+      background: #fff;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    h2,
+    h3 {
+      text-align: center;
+    }
+
+    form,
+    .game,
+    .results {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    form.active,
+    .game.active,
+    .results.active {
+      display: flex;
+    }
+
+    label {
+      margin: 10px 0;
+      width: 100%;
+    }
+
+    input,
+    select,
+    button {
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 5px;
+      width: 100%;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 120px);
+      gap: 15px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .card {
+      width: 120px;
+      height: 120px;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+
+    .card-inner {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+
+    .card.flipped .card-inner {
+      transform: rotateY(180deg);
+    }
+
+    .card-front,
+    .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      border-radius: 10px;
+    }
+
+    .card-front {
+      background: #007bff;
+      color: white;
+    }
+
+    .card-back {
+      background: #f1f1f1;
+      transform: rotateY(180deg);
+      border: 2px solid #007bff;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h2>Evaluación Cognitiva</h2>
+
+    <form id="userForm" class="active">
+      <label>Nombre: <input type="text" name="nombre" required></label>
+      <label>Edad: <input type="number" name="edad" required></label>
+      <label>Género:
+        <select name="genero" required>
+          <option value="">Seleccione</option>
+          <option value="M">Masculino</option>
+          <option value="F">Femenino</option>
+        </select>
+      </label>
+      <label>Educación:
+        <select name="educacion" required>
+          <option value="">Seleccione</option>
+          <option value="Primaria">Primaria</option>
+          <option value="Secundaria">Secundaria</option>
+          <option value="Profesional">Profesional</option>
+        </select>
+      </label>
+      <button type="submit">Comenzar Prueba</button>
+    </form>
+
+    <div class="game" id="memoryGame">
+      <h3>Encuentra los pares iguales</h3>
+      <div class="grid" id="cardGrid"></div>
+    </div>
+
+    <div class="results" id="results">
+      <h3>Resultados</h3>
+      <pre id="resultOutput"></pre>
+      <button onclick="location.reload()">Reiniciar</button>
+    </div>
+  </div>
+
+  <script>
+    const NUM_PARES = 4; // 🔧 Cambia esta variable para definir cuántos pares se deben emparejar
+
+    const form = document.getElementById("userForm");
+    const game = document.getElementById("memoryGame");
+    const resultBox = document.getElementById("results");
+    const resultOutput = document.getElementById("resultOutput");
+    const cardGrid = document.getElementById("cardGrid");
+
+    let userData = {};
+    let cardValues = [];
+    let flippedCards = [];
+    let matched = 0;
+    let totalTries = 0;
+    let errores = [];
+    let aciertos = [];
+    let startTime = 0;
+
+    let lastFlipTime = null;
+    let oneCardTime = null;
+    let intentos = []; // para registrar todos los intentos con tiempo y detalles
+
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const formData = new FormData(form);
+      userData = Object.fromEntries(formData.entries());
+      form.classList.remove("active");
+      startGame();
+    });
+
+    function startGame() {
+      game.classList.add("active");
+      cardGrid.innerHTML = '';
+      errores = [];
+      aciertos = [];
+      matched = 0;
+      totalTries = 0;
+      flippedCards = [];
+      cardValues = [];
+
+      const numbers = [];
+      while (numbers.length < NUM_PARES) {
+        const num = Math.floor(Math.random() * 90 + 10);
+        if (!numbers.includes(num)) numbers.push(num);
+      }
+
+      cardValues = [...numbers, ...numbers];
+      shuffleArray(cardValues);
+
+      cardValues.forEach((num, index) => {
+        const card = document.createElement("div");
+        card.classList.add("card");
+        card.dataset.value = num;
+        card.dataset.id = index; // 👈 ID único según posición en el tablero
+
+        card.innerHTML = `<div class="card-inner">
+        <div class="card-front">?</div>
+        <div class="card-back">${num}</div>
+        </div>`;
+        card.addEventListener("click", () => flipCard(card));
+        cardGrid.appendChild(card);
+      });
+
+
+      startTime = Date.now(); //Inicia el temporizador
+    }
+
+    function flipCard(card) {
+      if (card.classList.contains("flipped") || flippedCards.length === 2) return;
+
+      const now = Date.now();
+
+      if (flippedCards.length === 1) {
+        const timeBetween = (now - oneCardTime) / 1000;
+
+        intentos.push({
+          intento: totalTries + 1,
+          carta1_id: flippedCards[0].dataset.id,
+          carta1_valor: flippedCards[0].dataset.value,
+          carta2_id: card.dataset.id,
+          carta2_valor: card.dataset.value,
+          tiempo_entre_pares_seg: timeBetween.toFixed(2)
+        });
+      }
+
+      if (flippedCards.length === 0) {
+        oneCardTime = now;
+      }
+
+      card.classList.add("flipped");
+      flippedCards.push(card);
+
+      if (flippedCards.length === 2) {
+        totalTries++;
+        const [c1, c2] = flippedCards;
+
+        if (c1.dataset.value === c2.dataset.value) {
+          matched++;
+          aciertos.push({
+            intento: totalTries,
+            id1: c1.dataset.id,
+            id2: c2.dataset.id,
+            valor: c1.dataset.value,
+            resultado: "correcto"
+          });
+          flippedCards = [];
+
+          if (matched === NUM_PARES) endGame();
+        } else {
+          errores.push({
+            intento: totalTries,
+            id1: c1.dataset.id,
+            id2: c2.dataset.id,
+            valor1: c1.dataset.value,
+            valor2: c2.dataset.value,
+            resultado: "incorrecto"
+          });
+
+          setTimeout(() => {
+            c1.classList.remove("flipped");
+            c2.classList.remove("flipped");
+            flippedCards = [];
+          }, 1000);
+        }
+
+        lastFlipTime = now;
+      }
+    }
+
+
+    function endGame() {
+      game.classList.remove("active");
+      resultBox.classList.add("active");
+
+      const endTime = Date.now(); // ⏱️ Fin del temporizador
+      const duration = ((endTime - startTime) / 1000).toFixed(2); // segundos
+
+      const summary = {
+        ...userData,
+        pares_presentados: cardValues.map((v, i) => ({ id: i, valor: v })),
+        cantidad_pares: NUM_PARES,
+        intentos_totales: totalTries,
+        aciertos_totales: aciertos.length,
+        errores_totales: errores.length,
+        detalle_aciertos: aciertos,
+        detalle_errores: errores,
+        detalle_intentos: intentos,
+        tiempo_total_segundos: duration
+      };
+
+
+      resultOutput.textContent = JSON.stringify(summary, null, 2);
+      console.log("Resultado guardado:", summary);
+
+      fetch("http://localhost:4000/guardar", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(summary)
+      })
+        .then(res => res.text())
+        .then(data => console.log("Guardado:", data))
+        .catch(err => console.error("Error al guardar:", err));
+    }
+
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+  </script>
+
+
+</body>
+
+</html>
