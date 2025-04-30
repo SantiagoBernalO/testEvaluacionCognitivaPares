@@ -1,13 +1,10 @@
-// firebase.js
 const admin = require('firebase-admin');
 
-// local
-const serviceAccount = require('./credentials/paresactivity-firebase-adminsdk-fbsvc-d5cc6bb3e1.json'); // credencial
+let serviceAccount;
 
-
-//vercel
-/*
-const serviceAccount = {
+if (process.env.FIREBASE_PROJECT_ID) {
+  // Estamos en producción (Render, Vercel, etc.)
+  serviceAccount = {
     "type": "service_account",
     "project_id": process.env.FIREBASE_PROJECT_ID,
     "private_key_id": process.env.FIREBASE_PRIVATE_KEY_ID,
@@ -19,7 +16,10 @@ const serviceAccount = {
     "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
     "client_x509_cert_url": process.env.FIREBASE_CLIENT_X509_CERT_URL
   };
-*/
+} else {
+  // Estamos en local
+  serviceAccount = require('./credentials/paresactivity-firebase-adminsdk-fbsvc-d5cc6bb3e1.json');
+}
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
