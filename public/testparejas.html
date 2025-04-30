@@ -314,7 +314,11 @@
       resultOutput.textContent = JSON.stringify(summary, null, 2);
       console.log("Resultado guardado:", summary);
 
-      fetch("http://localhost:4000/guardar", {
+      const apiURL = location.hostname === "localhost"
+    ? "http://localhost:4000/guardar"
+    : "https://testevaluacioncognitivapares.onrender.com/guardar";
+
+      fetch(apiURL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
