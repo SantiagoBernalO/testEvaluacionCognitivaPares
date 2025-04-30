@@ -1,20 +1,27 @@
 const express = require('express');
 const cors = require('cors');
 const db = require('./firebase');  // Configuración de Firebase Admin SDK
+const path = require('path');
 const app = express();
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 
 app.use(cors());
 app.use(express.json());
-//app.use(express.static('public')); //express
 
-// Guardar datos en Firestore
+// servir /public
+app.use(express.static('public'));
+
+// Ruta opcional
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'testparejas.html'));
+});
+
 app.post('/guardar', async (req, res) => {
   const data = req.body;
   const fecha = new Date().toISOString();
 
   try {
-    const docRef = await db.collection('resultados').add({
+    await db.collection('resultados').add({
       nombre: data.nombre,
       edad: data.edad,
       genero: data.genero,
