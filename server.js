@@ -22,10 +22,11 @@ app.post('/guardar', async (req, res) => {
 
   try {
     await db.collection('resultados').add({
-      nombre: data.nombre,
       edad: data.edad,
       genero: data.genero,
       educacion: data.educacion,
+      mano: data.mano, 
+      dispositivo: data.dispositivo,
       fecha: fecha,
       cantidad_pares: data.cantidad_pares,
       tiempo_total_segundos: data.tiempo_total_segundos,
