@@ -140,6 +140,13 @@
 </head>
 
 <body>
+
+  <div style="text-align: center; margin-bottom: 20px;">
+    <button onclick="loginAnonimo()">Ingresar como Anónimo</button>
+    <button onclick="loginGoogle()">Ingresar con Google</button>
+  </div>
+
+
   <div class="container">
     <h2>Evaluación Cognitiva</h2>
 
@@ -189,6 +196,79 @@
       <button onclick="location.reload()">Terminar intento</button>
     </div>
   </div>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    // Importar los SDK necesarios
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import {
+      getAuth,
+      signInAnonymously,
+      signInWithPopup,
+      GoogleAuthProvider,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+
+    // Configura tu proyecto Firebase (sustituye por tus claves)
+    const firebaseConfig = {
+      apiKey: "AIzaSyC7vLTe9Pd9qZXo9-JSbRzvn9ilESFNEPc",
+      authDomain: "paresactivity.firebaseapp.com",
+      projectId: "paresactivity",
+      storageBucket: "paresactivity.firebasestorage.app",
+      messagingSenderId: "772924170776",
+      appId: "1:772924170776:web:f39784e202ddaffec2d96d",
+      measurementId: "G-3THNT1T97S"
+    };
+
+    // Inicializar Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    // Manejo de estado de autenticación
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        if (user.isAnonymous) {
+          // Usuario anónimo
+          userData.uid = user.uid;
+          userData.email = "anonimo";
+          userData.metodo_autenticacion = "anonimo";
+          console.log("Usuario autenticado como ANÓNIMO");
+        } else {
+          // Usuario autenticado con Google u otro proveedor
+          userData.uid = user.uid;
+          userData.email = user.email;
+          userData.metodo_autenticacion = "google";
+          console.log("Usuario autenticado con Google");
+        }
+      } else {
+        console.log("No hay usuario autenticado");
+      }
+    });
+
+    // Función para login anónimo
+    window.loginAnonimo = () => {
+      signInAnonymously(auth)
+        .then(() => {
+          console.log("Login anónimo exitoso");
+        })
+        .catch((error) => {
+          console.error("Error en login anónimo:", error);
+        });
+    };
+
+    // Función para login con Google
+    window.loginGoogle = () => {
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          console.log("Login Google exitoso:", result.user.displayName);
+        })
+        .catch((error) => {
+          console.error("Error en login con Google:", error);
+        });
+    };
+  </script>
+
 
   <script>
     const NUM_PARES = 4;
