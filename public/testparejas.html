@@ -122,16 +122,12 @@
     }
 
     /*responsive */
-    @media (max-width: 768px) {
-      .grid {
-        grid-template-columns: repeat(2, 120px);
-      }
-    }
-
-    @media (max-width: 480px) {
-      .grid {
-        grid-template-columns: repeat(1, 120px);
-      }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 120px);
+      gap: 15px;
+      justify-content: center;
+      margin-top: 20px;
     }
   </style>
 </head>
@@ -179,7 +175,7 @@
       <h3>Encuentra los pares iguales</h3>
       <div class="grid" id="cardGrid"></div>
     </div>
-    
+
     <div class="results" id="results">
       <!--<h3>Resultados</h3>-->
       <!--<pre id="resultOutput"></pre>-->
