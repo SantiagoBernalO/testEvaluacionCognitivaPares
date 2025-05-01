@@ -22,6 +22,9 @@ app.post('/guardar', async (req, res) => {
 
   try {
     await db.collection('resultados').add({
+      user_id: data.uid,
+      user_email: data.email,
+      metodo_autenticacion: data.metodo_autenticacion,
       edad: data.edad,
       genero: data.genero,
       educacion: data.educacion,

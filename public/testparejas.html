@@ -295,10 +295,12 @@
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       const formData = new FormData(form);
-      userData = Object.fromEntries(formData.entries());
+      const formValues = Object.fromEntries(formData.entries());
+      userData = { ...userData, ...formValues }; // Mezcla los datos anteriores con los nuevos
       form.classList.remove("active");
       startGame();
     });
+
 
     function startGame() {
       game.classList.add("active");
