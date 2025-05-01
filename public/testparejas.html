@@ -72,7 +72,8 @@
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(3, 120px);
+      grid-template-columns: repeat(4, 120px);
+      /* PC por defecto */
       gap: 15px;
       justify-content: center;
       margin-top: 20px;
@@ -122,12 +123,18 @@
     }
 
     /*responsive */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(4, 120px);
-      gap: 15px;
-      justify-content: center;
-      margin-top: 20px;
+    @media (max-width: 1024px) {
+      .grid {
+        grid-template-columns: repeat(2, 120px);
+        /* Tablets */
+      }
+    }
+
+    @media (max-width: 480px) {
+      .grid {
+        grid-template-columns: repeat(2, 120px);
+        /* Teléfonos */
+      }
     }
   </style>
 </head>
@@ -189,7 +196,7 @@
     const form = document.getElementById("userForm");
     const game = document.getElementById("memoryGame");
     const resultBox = document.getElementById("results");
-    //const resultOutput = document.getElementById("resultOutput");
+    const resultOutput = document.getElementById("resultOutput");
     const cardGrid = document.getElementById("cardGrid");
 
     let userData = {};
