@@ -193,7 +193,7 @@
     const form = document.getElementById("userForm");
     const game = document.getElementById("memoryGame");
     const resultBox = document.getElementById("results");
-    const resultOutput = document.getElementById("resultOutput");
+    //const resultOutput = document.getElementById("resultOutput");
     const cardGrid = document.getElementById("cardGrid");
 
     let userData = {};
@@ -335,7 +335,7 @@
         tiempo_total_segundos: duration
       };
 
-      resultOutput.textContent = JSON.stringify(summary, null, 2);
+      //resultOutput.textContent = JSON.stringify(summary, null, 2);
 
       const apiURL = location.hostname === "localhost"
         ? "http://localhost:4000/guardar"
