@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Evaluación Cognitiva</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <!-- Sección de Login -->
+  <div class="login-section" id="loginSection">
+    <div class="login-container">
+      <h2>Bienvenido a la Evaluación Cognitiva</h2>
+      <p>Por favor, inicie sesión para continuar</p>
+      <div class="login-buttons">
+        <button class="btn-anonymous" onclick="loginAnonimo()">Ingresar como Anónimo</button>
+        <button class="btn-google" onclick="loginGoogle()">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google logo">
+          Continuar con Google
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección de Evaluación Cognitiva (oculta inicialmente) -->
+  <div class="evaluation-section" id="evaluationSection" style="display: none;">
+    <div class="container">
+      <h2>Evaluación Cognitiva</h2>
+
+      <form id="userForm" class="active">
+        <label>Edad: <input type="number" name="edad" required></label>
+        <label>Género:
+          <select name="genero" required>
+            <option value="">Seleccione</option>
+            <option value="M">Masculino</option>
+            <option value="F">Femenino</option>
+          </select>
+        </label>
+        <label>Educación:
+          <select name="educacion" required>
+            <option value="">Seleccione</option>
+            <option value="Primaria">Primaria</option>
+            <option value="Secundaria">Secundaria</option>
+            <option value="Profesional">Profesional</option>
+          </select>
+        </label>
+        <label>Mano Dominante:
+          <select name="mano" required>
+            <option value="">Seleccione</option>
+            <option value="Izquierda">Izquierda</option>
+            <option value="Derecha">Derecha</option>
+          </select>
+        </label>
+        <label>Dispositivo:
+          <select name="dispositivo" required>
+            <option value="">Seleccione</option>
+            <option value="PC">PC</option>
+            <option value="Tablet">Tablet</option>
+            <option value="Telefono">Teléfono</option>
+          </select>
+        </label>
+        <button type="submit">Comenzar Prueba</button>
+      </form>
+
+      <div class="game" id="memoryGame">
+        <h3>Encuentra los pares iguales</h3>
+        <div class="grid" id="cardGrid"></div>
+      </div>
+
+      <div class="results" id="results">
+        <button onclick="location.reload()">Terminar intento</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script type="module" src="auth.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

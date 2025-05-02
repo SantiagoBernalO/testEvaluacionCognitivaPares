@@ -13,7 +13,7 @@ app.use(express.static('public'));
 
 // Ruta opcional
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'testparejas.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.post('/guardar', async (req, res) => {
