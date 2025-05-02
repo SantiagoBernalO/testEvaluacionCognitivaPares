@@ -1,5 +1,5 @@
 // Variables globales del juego
-const NUM_PARES = 4;
+const NUM_PARES = 6;
 
 const form = document.getElementById("userForm");
 const game = document.getElementById("memoryGame");
