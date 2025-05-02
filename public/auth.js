@@ -43,30 +43,25 @@ function showEvaluation() {
     }, 500);
 }
 
-// Manejo de estado de autenticación
 onAuthStateChanged(auth, (user) => {
     if (user) {
         if (user.isAnonymous) {
-            // Verificar si es la primera vez que entra
             const isFirstVisit = sessionStorage.getItem("firstVisit");
 
             if (!isFirstVisit) {
-                // Guardar la bandera en sessionStorage para futuras recargas en esta sesión
                 sessionStorage.setItem("firstVisit", "true");
 
-                // Mostrar evaluación solo si es la primera visita
                 userData.uid = user.uid;
                 userData.email = "anonimo";
                 userData.metodo_autenticacion = "anonimo";
                 console.log("Usuario autenticado como ANÓNIMO");
                 showEvaluation();
             } else {
-                // Si ya había una sesión previa anónima, forzar logout
                 console.log("Sesión anónima previa detectada. Cerrando sesión...");
-                auth.signOut();
+                sessionStorage.removeItem("firstVisit"); // LIMPIAR SESSIONSTORAGE
+                auth.signOut(); // Esto activa otra vez onAuthStateChanged con "null"
             }
         } else {
-            // Usuario autenticado con Google
             userData.uid = user.uid;
             userData.email = user.email;
             userData.metodo_autenticacion = "google";
@@ -75,12 +70,12 @@ onAuthStateChanged(auth, (user) => {
         }
     } else {
         console.log("No hay usuario autenticado");
-        // Mostrar login
         loginSection.style.opacity = '1';
         loginSection.style.display = 'flex';
         evaluationSection.style.display = 'none';
     }
 });
+
 
 
 // Función para login anónimo
